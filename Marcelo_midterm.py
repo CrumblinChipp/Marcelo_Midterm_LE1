@@ -14,17 +14,11 @@ user_accounts = {}
 admin_username = "admin"
 admin_password = "adminpass"
 
-# Function to display available games with their numbers and rental costs. and also to rent games
-def rent_display(username):
-    i=1
+# Function to rent games
+def rent_games(username):
     game_key = list(game_library.keys())
     total = float(0)
-    print("Available Games:")
-    print(f"{'Game Name':<25} {'Price':<8} {"Copies":<10}")
-    for items in game_library:
-        if game_library[items]['quantity'] != 0:
-            print(f"[{i}]{items:<20}: {"":<2}${game_library[items]['cost']:<3} :{"":<4}{game_library[items]['quantity']:<10}")
-            i += 1
+    display_available_games()
     print("=========================")
     print(f"Balance: ${user_accounts[username]['balance']}")
     while True:
@@ -34,7 +28,7 @@ def rent_display(username):
             print("Please try a valid Input..")
             continue
         if shopping == "":
-            return
+            return logged_in_menu(username)
         shopping -= 1
         shopping = game_key[shopping]
         user_accounts[username]['inventory'].append(shopping)
@@ -52,6 +46,9 @@ def rent_display(username):
             if confirm == "y":
                 break
             elif confirm == 'n':
+                gain_points = total / 2
+                user_accounts[username]['points'] = gain_points
+                print(f'gained Points: {user_accounts[username]['points']}')
                 total = float(user_accounts[username]['balance'] - total)
                 if total <= 0:
                     print('Insufficient Balance..')
@@ -64,7 +61,7 @@ def rent_display(username):
                     print('Press ENTER to return')
                     input()
                     os.system('cls')
-                    logged_in_menu(username)
+                    return logged_in_menu(username)
             else:
                 print("Please only input 'Y' for YES and 'N' for NO.")
             
@@ -93,18 +90,24 @@ def register_user():
         else:
             print("Password must be 5 or more characters")
 
+# Function to display available games with their numbers and rental costs
+def display_available_games():
+    i =1
+    print("Available Games:")
+    print(f"{'Game Name':<25} {'Price':<8} {"Copies":<10}")
+    for items in game_library:
+        if game_library[items]['quantity'] != 0:
+            print(f"[{i}]{items:<20}: {"":<2}${game_library[items]['cost']:<3} :{"":<4}{game_library[items]['quantity']:<10}")
+            i += 1
 
 # Function to return a game
 def return_game(username):
-    i=1
-    print("Rented Games:")
-    print(f"{'Game Name'}")
-    for items in user_accounts[username]['inventory']:
-        print(f"[{i}]{items:<20}")
+    display_inventory(username)
     print("=========================")
     while True:
         print("Please refer to the games number Above\n(Leave blank to go back)")
         try:
+            
             returning_item = int(input("Which Game would you like to return: "))
         except Exception:
             print("Please try a valid Input..")
@@ -166,27 +169,151 @@ def top_up_account(username):
 
 # Function to display user's inventory
 def display_inventory(username):
-        
+    i=1
+    print("Rented Games:")
+    print(f"{'Game Name'}")
+    for items in user_accounts[username]['inventory']:
+        print(f"[{i}]{items:<20}")
+        i+=1
 
 # Function for admin to update game details
-def admin_update_game(username):
-    pass
+def admin_update_game():
+    game_key = list(game_library.keys())
+    display_available_games
+    while True:
+        print("Refer to the Game's number Above\n(Leave blank to return)")
+        try:
+            edit_choice = int(input("Enter the Game you need to edit: "))
+        except Exception:
+            print('Incorrect Input. Please try Again.')
+            continue
+        if edit_choice == "":
+            return
+        edit_choice -=1
+        edit_choice = game_key[edit_choice]
+        print("=========================")
+        while True:
+            try:
+                new_price = float(input("Enter new Price: "))
+                new_copy = int(input("Enter new Quantity: "))
+            except Exception:
+                print("Please input a numerical value..")
+                continue
+            if new_price <= 0 or new_copy <= 0:
+                print('Please Input a valid Value..')
+            while True:
+                try:
+                    confirm = input("Please confirm the correct information?(Y/N):").lower()
+                except Exception:
+                    print("Please only input 'Y' for YES and 'N' for NO.")
+                    continue
+                if confirm == 'y':
+                    game_library[edit_choice]['cost'] = new_price
+                    game_library[edit_choice]['quantity'] = new_copy
+                    print("Game Successfully Updated..")
+                    print("Press ENTER to return to the main menu..")
+                    input()
+                    os.system('cls')
+                    return
+                elif confirm == 'n':
+                    print("Press ENTER to return to the main menu..")
+                    input()
+                    os.system('cls')
+                    return
 
-# Function for admin login
-def admin_login():
-    pass
 
 # Admin menu
 def admin_menu():
-    print('goods')
+    print('============================')
+    print(f"Welcome Admin")
 
-# Function for users to redeem points for a free game rental
+    while True:
+        print("{1} Browse Game\n{2} Update Game\n{3} Log out")
+        try:
+            main_choice = int(input("Enter Choice: "))
+        except Exception:
+            print("Please enter 1-3 only")
+        if main_choice == 1:
+            display_available_games()
+        elif main_choice == 2:
+            admin_update_game()
+        elif main_choice == 3:
+            print("=============================")
+            print("---Thank you and good bye---")
+            print("=============================")
+            exit()
+        else:
+            print("Please enter 1-3 only")
+
+# Function for users to confirm redeem points for a free game rental
 def redeem_free_rental(username):
-    pass
+    os.system('cls')
+    print("=====================CONGRATULATION=====================\n")
+    print("!!-You have enough points to redeem a FREE Game Rental-!!\n")
+    print("=====================CONGRATULATION=====================")
 
-# Function to display game inventory
-def display_game_inventory():
-    pass
+    while True:
+        try:
+            confirm = input("Would you like to redeem it?(Y/N): ")
+        except Exception:
+            print("Please only input 'Y' for YES and 'N' for NO.")
+            continue
+        if confirm == 'y':
+            free_rental(username)
+        elif confirm == 'n':
+            print("Press ENTER to return to the main menu..")
+            input()
+            os.system('cls')
+            return
+        else:
+            print("Please only input 'Y' for YES and 'N' for NO.")
+
+#Function to Redeem the free game rental
+def free_rental(username):
+    user_accounts[username]['points'] -= 3
+    game_key = list(game_library.keys())
+    i =1
+    print("Available Games:")
+    print(f"{'Game Name':<25} {"Copies":<10}")
+    for items in game_library:
+        if game_library[items]['quantity'] != 0:
+            print(f"[{i}]{items:<20}:{"":<4}{game_library[items]['quantity']:<10}")
+            i += 1
+    print("=========================")
+    while True:
+        try:
+            redeem = int(input("what Game would you like to Redeem(leave blank to return): "))
+        except Exception:
+            print("Please try a valid Input..")
+            continue
+        if redeem == "":
+            return logged_in_menu(username)
+        redeem -= 1
+        redeem = game_key[redeem]
+        user_accounts[username]['inventory'].append(redeem)
+        print("Current Game in cart:")
+        print(f"{redeem}")
+        
+        while True:
+            try:
+                confirm = input("Are you sure you want to redeem this Game?(Y/N):").lower()
+            except Exception:
+                print("Please only input 'Y' for YES and 'N' for NO.")
+                continue
+            
+            if confirm == "y":
+                game_library[redeem]['quantity'] -= 1
+                print("Game successfully Redeemed...")
+                print('Thank you for Shopping with us!!')
+                print("Press ENTER to return to the main menu..")
+                input()
+                os.system('cls')
+                return logged_in_menu(username)
+                
+            elif confirm == 'n':
+                break
+            else:
+                print("Please only input 'Y' for YES and 'N' for NO.")
 
 # Function to handle user's logged-in menu
 def logged_in_menu(username):
@@ -194,6 +321,8 @@ def logged_in_menu(username):
     print(f"Welcome {username}")
     if user_accounts[username]['points'] >= 3:
         redeem_free_rental(username)
+    if user_accounts[username]['inventory'] != None:
+        print(f"Rented: {user_accounts[username]['inventory']}")
     while True:
         print("{1} Rent\n{2} Return\n{3} Log out")
         try:
@@ -204,7 +333,7 @@ def logged_in_menu(username):
             if user_accounts[username]['balance'] == 0:
                 top_up_account(username)
             else:
-                rent_display(username)
+                rent_games(username)
         elif main_choice == 2:
             return_game(username)
         elif main_choice == 3:
@@ -217,11 +346,11 @@ def logged_in_menu(username):
                 
 # Function to check user credentials
 def check_credentials(username, password):
-    if username in user_accounts.keys() and password == user_accounts[username]['password']:
-        print('Log in Successfull..')
-        logged_in_menu(username)
     if username == admin_username and password == admin_password:
             admin_menu()
+    if username in user_accounts.keys() and password == user_accounts[username]['password']:
+        print('Log in Successful..')
+        logged_in_menu(username)
     else:
         print("Wrong Username or Password. Please Try again..")
     
