@@ -65,7 +65,6 @@ def rent_games(username):
             else:
                 print("Please only input 'Y' for YES and 'N' for NO.")
             
-
 # Function to register a new user
 def register_user():
     while True:
@@ -136,7 +135,6 @@ def return_game(username):
             else:
                 print("Please only input 'Y' for YES and 'N' for NO.")
 
-
 # Function to top-up user account
 def top_up_account(username):
     print("Before you can Rent a game, you must top-up your account first..")
@@ -166,7 +164,6 @@ def top_up_account(username):
             else:
                 print("Please only input 'Y' for YES and 'N' for NO.")
                 
-
 # Function to display user's inventory
 def display_inventory(username):
     i=1
@@ -220,7 +217,6 @@ def admin_update_game():
                     input()
                     os.system('cls')
                     return
-
 
 # Admin menu
 def admin_menu():
